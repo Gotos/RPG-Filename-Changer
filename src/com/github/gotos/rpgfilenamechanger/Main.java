@@ -127,9 +127,11 @@ public class Main {
 									
 									renameInCommands(args[1], args[2], page.getCommands());
 									
-									for (LuciferMoveCommand move : page.getRoute().getCommands()) {
+									for (int i = 0; i < page.getRoute().getCommands().size(); i++) {
+										LuciferMoveCommand move = page.getRoute().getCommands().get(i);
 										if (move.type == 0x22 && move.filename.equalsIgnoreCase(args[1])) {
 											move = new LuciferMoveCommand(move.type, move.data, args[2]);
+											page.getRoute().getCommands().set(i, move);
 										}
 									}
 								}
@@ -154,20 +156,24 @@ public class Main {
 	
 	private static void renameInCommands(String oldname, String newname, List<LuciferEventCommand> commands)
 			throws UnsupportedEncodingException, IllegalArgumentException {
-		for (LuciferEventCommand command : commands) {
+		for (int k = 0; k < commands.size(); k++) {
+			LuciferEventCommand command = commands.get(k);
 			if (command.type == LuciferEventCommand.CHANGE_HERO_GRAPHIC || command.type == LuciferEventCommand.CHANGE_VEHICLE_GRAPHIC) {
 				if (command.string.equalsIgnoreCase(oldname)) {
 					command.string = newname;
 				}
 			} else if (command.type == LuciferEventCommand.MOVE_EVENT) {
 				List<LuciferMoveCommand> list = LuciferMoveCommand.assembleMoveCommands(command);
-				for (LuciferMoveCommand move : list) {
+				for (int i = 0; i < list.size(); i++) {
+					LuciferMoveCommand move = list.get(i);
 					if (move.type == 0x22 && move.filename.equalsIgnoreCase(oldname)) {
 						move = new LuciferMoveCommand(move.type, move.data, newname);
+						list.set(i, move);
 					}
 				}
 				command = LuciferMoveCommand.disassembleMoveCommands(
 						list, command.data[0], command.data[1], command.data[2], command.data[3], command.depth);
+				commands.set(k, command);
 			}
 		}
 	}
