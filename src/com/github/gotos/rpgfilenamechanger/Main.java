@@ -1,15 +1,23 @@
 package com.github.gotos.rpgfilenamechanger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.naming.event.EventContext;
 
 import com.github.gotos.rpgreader.engine.DataReader;
 import com.github.gotos.rpgreader.engine.LuciferCommonEvent;
 import com.github.gotos.rpgreader.engine.LuciferDatabase;
+import com.github.gotos.rpgreader.engine.LuciferEventCommand;
 import com.github.gotos.rpgreader.engine.LuciferHeroUnit;
+import com.github.gotos.rpgreader.engine.LuciferMapEvent;
+import com.github.gotos.rpgreader.engine.LuciferMapEventPage;
+import com.github.gotos.rpgreader.engine.LuciferMapUnit;
+import com.github.gotos.rpgreader.engine.LuciferMoveCommand;
 
 /**
  * Main Class, the class that will be started.
@@ -58,29 +66,109 @@ public class Main {
 			System.out.println("newFile already exist! Exiting...");
 			System.exit(4);
 		}
+		DataReader dr;
 		
 		//get db
-		DataReader dbdr;
-		for (String filename : new File(path).list()) {
+		/*for (String filename : new File(args[0]).list()) {
 			if (filename.equalsIgnoreCase("rpg_rt.ldb")) {
-				dbdr = DataReader.parseFile(path + "/" + filename);
+				dr = DataReader.parseFile(args[0] + "/" + filename);
 				try {
-					dbdr.nextUnitZeroID();
-					LuciferDatabase db = new LuciferDatabase(dbdr);
+					dr.nextUnitZeroID();
+					LuciferDatabase db = new LuciferDatabase(dr);
 					for (LuciferHeroUnit hero : db.getHeroes()) {
-						if (hero.getGraphicFile().equalsIgnoreCase(args[1])) {
-							hero.setGraphicFile(args[2]);
+						if (hero != null) {
+							if (hero.getGraphicFile().equalsIgnoreCase(args[1])) {
+								hero.setGraphicFile(args[2]);
+							}
 						}
 					}
+					if (db.getSystem().getAirship().equalsIgnoreCase(args[1])) {
+						db.getSystem().setAirship(args[2]);
+					}
+					if (db.getSystem().getShip().equalsIgnoreCase(args[1])) {
+						db.getSystem().setShip(args[2]);
+					}
+					if (db.getSystem().getBoat().equalsIgnoreCase(args[1])) {
+						db.getSystem().setBoat(args[2]);
+					}
+					for (LuciferCommonEvent ce : db.getCommonEvents()) {
+						if (ce != null) {
+							renameInCommands(args[1], args[2], ce.getCommands());
+						}
+					}
+
+					FileOutputStream fos = new FileOutputStream(args[0] + "/" + filename);
+					fos.write(db.write());
+					fos.close();
+					
 				} catch (IOException e) {
 					System.out.println("Database broken!");
 					System.exit(5);
 				}
 				
 			}
+		}*/
+		
+		//get Maps
+		for (String filename : new File(args[0]).list()) {
+			if (filename.toLowerCase().startsWith("map")) {
+				dr = DataReader.parseFile(args[0] + "/" + filename);
+				try {
+					dr.nextUnitZeroID();
+					LuciferMapUnit map = new LuciferMapUnit(dr);
+					
+					for (LuciferMapEvent event : map.getEvents()) {
+						if (event != null) {
+							for (LuciferMapEventPage page : event.getPages()) {
+								if (page != null) {
+									if (page.getCharset().equalsIgnoreCase(args[1])) {
+										page.setCharset(args[2]);
+									}
+									
+									renameInCommands(args[1], args[2], page.getCommands());
+									
+									for (LuciferMoveCommand move : page.getRoute().getCommands()) {
+										if (move.type == 0x22 && move.filename.equalsIgnoreCase(args[1])) {
+											move = new LuciferMoveCommand(move.type, move.data, args[2]);
+										}
+									}
+								}
+							}
+						}
+					}
+					
+					FileOutputStream fos = new FileOutputStream(args[0] + "/" + filename);
+					fos.write(map.write());
+					fos.close();
+					
+				} catch (IOException e) {
+					System.out.print("Map broken! ");
+					System.out.println(filename);
+				}
+			}
 		}
 		
 		//rename file
 		oldFile.renameTo(newFile);
+	}
+	
+	private static void renameInCommands(String oldname, String newname, List<LuciferEventCommand> commands)
+			throws UnsupportedEncodingException, IllegalArgumentException {
+		for (LuciferEventCommand command : commands) {
+			if (command.type == LuciferEventCommand.CHANGE_HERO_GRAPHIC || command.type == LuciferEventCommand.CHANGE_VEHICLE_GRAPHIC) {
+				if (command.string.equalsIgnoreCase(oldname)) {
+					command.string = newname;
+				}
+			} else if (command.type == LuciferEventCommand.MOVE_EVENT) {
+				List<LuciferMoveCommand> list = LuciferMoveCommand.assembleMoveCommands(command);
+				for (LuciferMoveCommand move : list) {
+					if (move.type == 0x22 && move.filename.equalsIgnoreCase(oldname)) {
+						move = new LuciferMoveCommand(move.type, move.data, newname);
+					}
+				}
+				command = LuciferMoveCommand.disassembleMoveCommands(
+						list, command.data[0], command.data[1], command.data[2], command.data[3], command.depth);
+			}
+		}
 	}
 }
