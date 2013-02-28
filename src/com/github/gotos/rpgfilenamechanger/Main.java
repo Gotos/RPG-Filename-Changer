@@ -40,31 +40,49 @@ public class Main {
 			System.out.println("Usage: java Main pathToProject oldFilename newFilename");
 			System.exit(1);
 		}
+		run(args[0], args[1], args[2]);
+	}
+	
+	/**
+	 * Opens Project in projectPath and renames the charset named oldName to newName
+	 * 
+	 * @param projectPath project path
+	 * @param oldName old name
+	 * @param newName new name
+	 * @return success?
+	 */
+	public static boolean run(String projectPath, String oldName, String newName) {
+		
 		String path = null;
-		for (String folder : new File(args[0]).list()) {
+		File projectFile = new File(projectPath);
+		if (!projectFile.exists() || !projectFile.isDirectory()) {
+			System.out.println("pathToProject is not a directory!");
+			return false;
+		}
+		for (String folder : new File(projectPath).list()) {
 			if (folder.equalsIgnoreCase("charset")) {
-				path = args[0] + "/" + folder;
+				path = projectPath + "/" + folder;
 			}
 		}
 		if (path == null) {
 			System.out.println("No Charset-folder found in project.");
-			System.exit(2);
+			return false;
 		}
 		File oldFile = null;
 		for (String filename : new File(path).list()) {
-			if (filename.toLowerCase().startsWith(args[1].toLowerCase())) {
+			if (filename.toLowerCase().startsWith(oldName.toLowerCase())) {
 				oldFile = new File(path + "/" + filename);
 			}
 		}
 		if (oldFile == null) {
 			System.out.println("oldFile does not exist!");
-			System.exit(3);
+			return false;
 		}
 		String extension = oldFile.getPath().substring(oldFile.getPath().lastIndexOf("."));
-		File newFile = new File(path + "/" + args[2] + extension);
+		File newFile = new File(path + "/" + newName + extension);
 		if (newFile.exists()) {
 			System.out.println("newFile already exist! Exiting...");
-			System.exit(4);
+			return false;
 		}
 		DataReader dr;
 		
@@ -103,16 +121,16 @@ public class Main {
 					
 				} catch (IOException e) {
 					System.out.println("Database broken!");
-					System.exit(5);
+					return false;
 				}
 				
 			}
 		}*/
 		
 		//get Maps
-		for (String filename : new File(args[0]).list()) {
+		for (String filename : new File(projectPath).list()) {
 			if (filename.toLowerCase().startsWith("map")) {
-				dr = DataReader.parseFile(args[0] + "/" + filename);
+				dr = DataReader.parseFile(projectPath + "/" + filename);
 				try {
 					dr.nextUnitZeroID();
 					LuciferMapUnit map = new LuciferMapUnit(dr);
@@ -121,16 +139,16 @@ public class Main {
 						if (event != null) {
 							for (LuciferMapEventPage page : event.getPages()) {
 								if (page != null) {
-									if (page.getCharset().equalsIgnoreCase(args[1])) {
-										page.setCharset(args[2]);
+									if (page.getCharset().equalsIgnoreCase(oldName)) {
+										page.setCharset(newName);
 									}
 									
-									renameInCommands(args[1], args[2], page.getCommands());
+									renameInCommands(oldName, newName, page.getCommands());
 									
 									for (int i = 0; i < page.getRoute().getCommands().size(); i++) {
 										LuciferMoveCommand move = page.getRoute().getCommands().get(i);
-										if (move.type == 0x22 && move.filename.equalsIgnoreCase(args[1])) {
-											move = new LuciferMoveCommand(move.type, move.data, args[2]);
+										if (move.type == 0x22 && move.filename.equalsIgnoreCase(oldName)) {
+											move = new LuciferMoveCommand(move.type, move.data, newName);
 											page.getRoute().getCommands().set(i, move);
 										}
 									}
@@ -139,7 +157,7 @@ public class Main {
 						}
 					}
 					
-					FileOutputStream fos = new FileOutputStream(args[0] + "/" + filename);
+					FileOutputStream fos = new FileOutputStream(projectPath + "/" + filename);
 					fos.write(map.write());
 					fos.close();
 					
@@ -152,6 +170,7 @@ public class Main {
 		
 		//rename file
 		oldFile.renameTo(newFile);
+		return true;
 	}
 	
 	private static void renameInCommands(String oldname, String newname, List<LuciferEventCommand> commands)
