@@ -9,8 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 
 
 /**
@@ -27,12 +25,12 @@ public class GUI extends JFrame {
 	private static final long serialVersionUID = 5540946949748987474L;
 
 	private JPanel jContentPane = null;
-	private JLabel jLabel_Project = null;
-	private JLabel jLabel_old = null;
-	private JLabel jLabel_new = null;
-	private JTextField jTextField_Project = null;
-	private JTextField jTextField_old = null;
-	private JTextField jTextField_new = null;
+	private JLabel jLabelProject = null;
+	private JLabel jLabelOld = null;
+	private JLabel jLabelNew = null;
+	private JTextField jTextFieldProject = null;
+	private JTextField jTextFieldOld = null;
+	private JTextField jTextFieldNew = null;
 	
 	/**
 	 * This is the default constructor
@@ -61,63 +59,63 @@ public class GUI extends JFrame {
 	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
-			jLabel_Project  = new JLabel();
-			jLabel_Project.setBounds(new Rectangle(10, 10, 75, 20));
-			jLabel_Project.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-			jLabel_Project.setHorizontalAlignment(SwingConstants.RIGHT);
-			jLabel_Project.setText("Project:");
+			jLabelProject  = new JLabel();
+			jLabelProject.setBounds(new Rectangle(10, 10, 75, 20));
+			jLabelProject.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			jLabelProject.setHorizontalAlignment(SwingConstants.RIGHT);
+			jLabelProject.setText("Project:");
 
-			jLabel_old  = new JLabel();
-			jLabel_old.setBounds(new Rectangle(10, 30, 75, 20));
-			jLabel_old.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-			jLabel_old.setHorizontalAlignment(SwingConstants.RIGHT);
-			jLabel_old.setText("Oldname:");
-			jLabel_new  = new JLabel();
-			jLabel_new.setBounds(new Rectangle(10, 50, 75, 20));
-			jLabel_new.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-			jLabel_new.setHorizontalAlignment(SwingConstants.RIGHT);
-			jLabel_new.setText("Newname:");
+			jLabelOld  = new JLabel();
+			jLabelOld.setBounds(new Rectangle(10, 30, 75, 20));
+			jLabelOld.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			jLabelOld.setHorizontalAlignment(SwingConstants.RIGHT);
+			jLabelOld.setText("Oldname:");
+			jLabelNew  = new JLabel();
+			jLabelNew.setBounds(new Rectangle(10, 50, 75, 20));
+			jLabelNew.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			jLabelNew.setHorizontalAlignment(SwingConstants.RIGHT);
+			jLabelNew.setText("Newname:");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
-			jContentPane.add(jLabel_Project, null);
-			jContentPane.add(jLabel_old, null);
-			jContentPane.add(jLabel_new, null);
-			jContentPane.add(getJTextField_Project(), null);
-			jContentPane.add(getJTextField_old(), null);
-			jContentPane.add(getJTextField_new(), null);
+			jContentPane.add(jLabelProject, null);
+			jContentPane.add(jLabelOld, null);
+			jContentPane.add(jLabelNew, null);
+			jContentPane.add(getJTextFieldProject(), null);
+			jContentPane.add(getJTextFieldOld(), null);
+			jContentPane.add(getJTextFieldNew(), null);
 	}
 		return jContentPane;
 	}
 	
-	private JTextField getJTextField_Project() {
-		if (jTextField_Project == null) {
-			jTextField_Project = new JTextField();
-			jTextField_Project.setBounds(new Rectangle(105, 10, 175, 20));
-			jTextField_Project.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+	private JTextField getJTextFieldProject() {
+		if (jTextFieldProject == null) {
+			jTextFieldProject = new JTextField();
+			jTextFieldProject.setBounds(new Rectangle(105, 10, 175, 20));
+			jTextFieldProject.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		}
-		return jTextField_Project;
+		return jTextFieldProject;
 	}
 
-	private JTextField getJTextField_old() {
-		if (jTextField_old == null) {
-			jTextField_old = new JTextField();
-			jTextField_old.setBounds(new Rectangle(105, 30, 175, 20));
-			jTextField_old.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+	private JTextField getJTextFieldOld() {
+		if (jTextFieldOld == null) {
+			jTextFieldOld = new JTextField();
+			jTextFieldOld.setBounds(new Rectangle(105, 30, 175, 20));
+			jTextFieldOld.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		}
-		return jTextField_old;
+		return jTextFieldOld;
 	}
 	
-	private JTextField getJTextField_new() {
-		if (jTextField_new == null) {
-			jTextField_new = new JTextField();
-			jTextField_new.setBounds(new Rectangle(105, 50, 175, 20));
-			jTextField_new.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+	private JTextField getJTextFieldNew() {
+		if (jTextFieldNew == null) {
+			jTextFieldNew = new JTextField();
+			jTextFieldNew.setBounds(new Rectangle(105, 50, 175, 20));
+			jTextFieldNew.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		}
-		return jTextField_new;
+		return jTextFieldNew;
 	}
 	
 	/**
-	 * @param args
+	 * @param args Args
 	 */
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
