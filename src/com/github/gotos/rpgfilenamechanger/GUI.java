@@ -2,7 +2,10 @@ package com.github.gotos.rpgfilenamechanger;
 
 import java.awt.ComponentOrientation;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,6 +34,7 @@ public class GUI extends JFrame {
 	private JTextField jTextFieldProject = null;
 	private JTextField jTextFieldOld = null;
 	private JTextField jTextFieldNew = null;
+	private JButton jButtonRun = null;
 	
 	/**
 	 * This is the default constructor
@@ -83,6 +87,7 @@ public class GUI extends JFrame {
 			jContentPane.add(getJTextFieldProject(), null);
 			jContentPane.add(getJTextFieldOld(), null);
 			jContentPane.add(getJTextFieldNew(), null);
+			jContentPane.add(getJButtonRun(), null);
 	}
 		return jContentPane;
 	}
@@ -112,6 +117,23 @@ public class GUI extends JFrame {
 			jTextFieldNew.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		}
 		return jTextFieldNew;
+	}
+	
+	private JButton getJButtonRun() {
+		if (jButtonRun == null) {
+			jButtonRun = new JButton();
+			jButtonRun.setBounds(new Rectangle(115, 80, 70, 35));
+			jButtonRun.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			jButtonRun.setText("Run");
+			jButtonRun.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					Main.run(jTextFieldProject.getText(), jTextFieldOld.getText(), jTextFieldNew.getText());
+				}
+			});
+		}
+		return jButtonRun;
 	}
 	
 	/**
