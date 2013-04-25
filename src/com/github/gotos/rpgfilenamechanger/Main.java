@@ -52,7 +52,7 @@ public class Main {
 		}
 		File oldFile = null;
 		for (String filename : new File(path).list()) {
-			if (filename.toLowerCase().startsWith(args[1].toLowerCase())) {
+			if (filename.toLowerCase().startsWith(args[1].toLowerCase()) && filename.length() == args[0].length() + 4) {
 				oldFile = new File(path + "/" + filename);
 			}
 		}
